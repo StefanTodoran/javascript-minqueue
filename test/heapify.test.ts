@@ -44,13 +44,25 @@ describe("MinQueue", () => {
         assert.strictEqual(queue.size, 1);
     });
 
-    test("should not be able to push new items beyond capacity", () => {
-        const queue = new MinQueue(1);
+    // test("should not be able to push new items beyond capacity", () => {
+    //     const queue = new MinQueue(1);
+    //     assert.strictEqual(queue.size, 0);
+    //     queue.push(1, 10);
+    //     assert.strictEqual(queue.size, 1);
+    //     assert.throws(() => queue.push(2, 20));
+    //     assert.strictEqual(queue.size, 1);
+    // });
+    
+    test("should expand once capacity is reached", () => {
+        const queue = new MinQueue(2);
         assert.strictEqual(queue.size, 0);
         queue.push(1, 10);
-        assert.strictEqual(queue.size, 1);
-        assert.throws(() => queue.push(2, 20));
-        assert.strictEqual(queue.size, 1);
+        queue.push(2, 20);
+        assert.strictEqual(queue.size, 2);
+        queue.push(3, 30);
+        assert.strictEqual(queue.capacity, 4);
+        queue.push(4, 40);
+        assert.strictEqual(queue.size, 4);
     });
 
     test("pop item", () => {

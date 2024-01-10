@@ -6,9 +6,12 @@ type TypedArray = Int8Array | Uint8Array | Uint8ClampedArray | Int16Array | Uint
     Float32Array | Float64Array;
 
 export class MinQueue {
-    private readonly _capacity: number;
-    private readonly _keys: TypedArray;
-    private readonly _priorities: TypedArray;
+    private _capacity: number;
+    private _keys: TypedArray;
+    private _priorities: TypedArray;
+
+    private readonly _kbat = Uint32Array;
+    private readonly _pbat = Uint32Array;
 
     private length: number;
     private _hasPoppedElement: boolean;
@@ -16,6 +19,9 @@ export class MinQueue {
     constructor(capacity = 64, keys: number[] = [], priorities: number[] = [],
         KeysBackingArrayType = Uint32Array,
         PrioritiesBackingArrayType = Uint32Array) {
+
+        this._kbat = KeysBackingArrayType;
+        this._pbat = PrioritiesBackingArrayType;
 
         this._capacity = capacity;
         this._keys = new KeysBackingArrayType(capacity + ROOT_INDEX);
@@ -126,7 +132,15 @@ export class MinQueue {
      */
     push(key: number, priority: number): void {
         if (this.length === this._capacity) {
-            throw new Error("Heap has reached capacity, can't push new items");
+            this._capacity = this._capacity * 2;
+            
+            const newKeys = new this._kbat(this._capacity + ROOT_INDEX);
+            newKeys.set(this._keys);
+            this._keys = newKeys;
+
+            const newPriorities = new this._pbat(this._capacity + ROOT_INDEX);
+            newPriorities.set(this._priorities);
+            this._priorities = newPriorities;
         }
 
         if (this._hasPoppedElement) {
